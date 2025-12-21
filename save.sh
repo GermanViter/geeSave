@@ -1,5 +1,17 @@
 #!/bin/bash
 
+################################################################
+#                                                              #
+#           Gee save main script file                          #
+#                                                              #
+#                                                              #
+################################################################
+
+# 22 dec : add notification
+#### progress
+#### resume
+#### colors
+
 command -v rsync >/dev/null 2>&1 || { echo "rsync not installed"; exit 1; }
 command -v tar >/dev/null 2>&1 || { echo "tar not installed"; exit 1; }
 
