@@ -38,8 +38,13 @@ sudo apt install -y rsync
  - mkdir Destination/Folder/Example
 3. Run the script
 
+---
+
 ## Customization
 
-* Number of backups to keep: change N in the script (tail -n +N+1)
-* Log path: modify the LOGS variable in the script
-* Compression: enabled by default using tar -czf
+1. **Number of backups to keep: change N in the script (tail -n +N+1)**
+2. **Log path: modify the LOGS variable in the script**
+3. **Compression: enabled by default using tar -czf**
+4. **A third arfument can be used to determine the name of the backup.**
+   If no name is used, the name of the .tar.gz archive will contain "path/to/folder.tar.gz".**
+   Else, the name will be "path/to/folder/$NAME.tar.gz"
