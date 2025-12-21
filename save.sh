@@ -2,6 +2,7 @@
 
 SOURCE=$1
 DEST=$2
+BACKUP=$3
 
 if [[ -z $SOURCE || -z $DEST ]]; then
 	echo "Erreur: le programme a besoins de deux arguments pour fonctionner"
@@ -10,10 +11,7 @@ fi
 
 DATE=$(date +"%Y-%m-%d_%H-%M-%S")
 BACKUP_DIR="$DEST/backup_$DATE"
-
-LOGS="/home/sshuser/FileSaveProject/logs/backup.log"
-
-
+LOGS="/home/sshuser/geeSave/logs/backup.log"
 
 if [[ ! -d "$SOURCE" ]]; then
 	echo "Erreur: le dossier source n'existe pas"
@@ -24,7 +22,11 @@ mkdir -p "$BACKUP_DIR"
 
 rsync -av
 "$SOURCE/" "$BACKUP_DIR"
-tar -czf "$BACKUP_DIR.tar.gz" -C "$DEST" "backup_$DATE"
+if [[ ! -z $BACKUP ]]; then
+    tar -czf "$DEST/$BACKUP.tar.gz" -C "$DEST" "backup_$DATE"
+else
+    tar -czf "$BACKUP_DIR.tar.gz" -C "$DEST" "backup_$DATE"
+fi
 rm -r "$BACKUP_DIR"
 
 echo "[$DATE] $BACKUP_DIR : succes" >> $LOGS

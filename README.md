@@ -31,7 +31,7 @@ sudo apt install -y rsync
 ## Usage
 
 1. Clone the repository
- - git clone git@github.com:GermanViter/geeSave.git
+ - git clone https://github.com/GermanViter/geeSave.git
  - cd geeSave
 2. Create source folder and the destination for the save folders
  - mkdir Source/Folder/Example
