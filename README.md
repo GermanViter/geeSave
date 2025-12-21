@@ -1,13 +1,14 @@
 # geeSave - Automatic Backup Script
 
 ## Description
-`FileSaveProject` is a Bash script that automatically backs up a folder to a destination with:
+
+geeSave is a small Bash script that automatically backs up a folder to a destination. It focuses on reliability and simplicity and provides:
 - Efficient file copying using `rsync`
 - Compression of backups into `.tar.gz` archives
-- Automatic cleanup of old backups (keep only N most recent)
-- Detailed logging for every step
+- Automatic cleanup of old backups (keep only the N most recent)
+- Detailed logging of each step
 
-This script is designed for Linux (Ubuntu) and works well inside a Docker container.
+This script is designed for Linux (Ubuntu and other Debian-based distributions) and works well inside a Docker container.
 
 ---
 
@@ -22,38 +23,78 @@ This script is designed for Linux (Ubuntu) and works well inside a Docker contai
 
 ## Prerequisites
 
-- Ubuntu or another Linux distribution with Bash
-- `rsync` installed:
+- A Linux distribution with Bash (Ubuntu recommended)  
+- `rsync` and `tar` installed
+
+Install prerequisites on Debian/Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install -y rsync
+sudo apt install -y rsync tar
+```
+
+---
+
+## Installation
+
+There are two common ways to install and use geeSave.
+
+### 1) Install from the release .deb (easy)
+
+Download the .deb from the Releases page and install it with dpkg:
+
+```bash
+wget https://github.com/GermanViter/geeSave/releases/download/v1.0/geeSave.deb
+sudo dpkg -i geeSave.deb
+# If dpkg reports missing dependencies, fix them with:
+sudo apt-get install -f
+```
+
+After installing the package, a system-wide command named `geeSave` will be available (or the package will install the script to a standard location). Run it as shown in the Usage section below.
+
+### 2) Run from source (manual)
+
+```bash
+git clone https://github.com/GermanViter/geeSave.git
+cd geeSave
+```
+
+You can run the script directly from the repository:
+
+```bash
+bash FileSaveProject.sh /path/to/source/folder /path/to/destination/folder [optional_backup_name]
 ```
 
 ---
 
 ## Usage
 
-1. Clone the repository:
-```bash
-git clone https://github.com/GermanViter/geeSave.git
-cd geeSave
-```
+1. Create the source and destination folders if they don't exist:
 
-2. Create the source and destination folders if they don't exist:
 ```bash
 mkdir -p /path/to/source/folder
 mkdir -p /path/to/destination/folder
 ```
 
-3. Run the script:
+2. Run the script
+
+If installed system-wide (from the .deb):
+
+```bash
+geeSave /path/to/source/folder /path/to/destination/folder [optional_backup_name]
+```
+
+If running the bundled script directly:
+
 ```bash
 bash FileSaveProject.sh /path/to/source/folder /path/to/destination/folder [optional_backup_name]
 ```
+
 - If you provide the optional third argument, the archive will be named using that string.
 - If you omit the third argument, the script will create a name derived from the source folder path.
 
 Example:
+
 ```bash
 bash FileSaveProject.sh /home/alice/Project /home/alice/Backups project-backup
 # creates /home/alice/Backups/project-backup.tar.gz (and logs actions)
@@ -66,6 +107,7 @@ bash FileSaveProject.sh /home/alice/Project /home/alice/Backups project-backup
 1. Number of backups to keep:
    - Inside the script there is logic that removes older backups. Change the N value used there to keep more or fewer backups.
    - Example shell pattern to remove older archives and keep only the newest N (replace N with a number, DEST with your backup folder):
+
 ```bash
 N=7
 DEST="/path/to/destination"
@@ -85,8 +127,25 @@ ls -1t "$DEST"/*.tar.gz | tail -n +$((N+1)) | xargs -r rm -f
 
 ---
 
-## Notes and fixes to original README
-- Fixed an unclosed code block in the prerequisites section.
-- Corrected typos (e.g., "argument") and wording.
-- Clarified how the cleanup step works (example for keeping only N backups).
-- Added concrete examples for running the script.
+## Troubleshooting
+
+- If `dpkg -i` fails because of missing dependencies, run `sudo apt-get install -f` to install them and finish the installation.
+- Make sure `rsync` and `tar` are installed and available in your PATH.
+- Check the log file (see `LOGS` variable in the script) for detailed error information.
+
+---
+
+## Changes made to README
+
+- Replaced inconsistent project name (`FileSaveProject`) with `geeSave` where appropriate.
+- Fixed typos and unclosed code blocks.
+- Added installation instructions for the .deb release (download + dpkg) and a note to fix dependencies with `sudo apt-get install -f`.
+- Clarified usage examples and the cleanup behavior.
+
+---
+
+If you'd like, I can also:
+- Update the script to consistently print the installed command name after installation (useful when packaging), or
+- Update packaging metadata so the executable is installed to `/usr/local/bin/geeSave`.
+
+Tell me which branch to commit to and confirm (or edit) the commit message and I'll apply the change.
