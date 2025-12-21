@@ -1,10 +1,19 @@
 #!/bin/bash
 
-SOURCE="/tmp/sources_text"
-DEST="/tmp/sauvegardes"
+SOURCE=$1
+DEST=$2
+
+if [[ -z $SOURCE || -z $DEST ]]; then
+	echo "Erreur: le programme a besoins de deux arguments pour fonctionner"
+	exit 1;
+fi
 
 DATE=$(date +"%Y-%m-%d_%H-%M-%S")
 BACKUP_DIR="$DEST/backup_$DATE"
+
+LOGS="/home/sshuser/FileSaveProject/logs/backup.log"
+
+
 
 if [[ ! -d "$SOURCE" ]]; then
 	echo "Erreur: le dossier source n'existe pas"
@@ -13,6 +22,20 @@ fi
 
 mkdir -p "$BACKUP_DIR"
 
-cp -r "$SOURCE/" "$BACKUP_DIR"
+rsync -av
+"$SOURCE/" "$BACKUP_DIR"
+tar -czf "$BACKUP_DIR.tar.gz" -C "$DEST" "backup_$DATE"
+rm -r "$BACKUP_DIR"
 
-echo "sauvegarde terminee avec succes : $BACKUP_DIR"
+echo "[$DATE] $BACKUP_DIR : succes" >> $LOGS
+echo "[$DATE] $DEST/backup_$DATE.tar.gz : compressé" >> $LOGS
+
+for OLD in $(ls -t $DEST | grep backup_ | tail -n +6); do
+	rm -r "$DEST/$OLD"
+	echo "[$DATE] Suppression : $OLD" >> $LOGS
+done
+
+
+
+
+echo "sauvegarde terminee avec succes : $BACKUP_DIR.tar.gz"
