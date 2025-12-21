@@ -81,13 +81,13 @@ mkdir -p /path/to/destination/folder
 If installed system-wide (from the .deb):
 
 ```bash
-geeSave /path/to/source/folder /path/to/destination/folder [optional_backup_name]
+save /path/to/source/folder /path/to/destination/folder [optional_backup_name]
 ```
 
 If running the bundled script directly:
 
 ```bash
-bash FileSaveProject.sh /path/to/source/folder /path/to/destination/folder [optional_backup_name]
+bash save.sh /path/to/source/folder /path/to/destination/folder [optional_backup_name]
 ```
 
 - If you provide the optional third argument, the archive will be named using that string.
@@ -96,7 +96,7 @@ bash FileSaveProject.sh /path/to/source/folder /path/to/destination/folder [opti
 Example:
 
 ```bash
-bash FileSaveProject.sh /home/alice/Project /home/alice/Backups project-backup
+bash save.sh /home/alice/Project /home/alice/Backups project-backup
 # creates /home/alice/Backups/project-backup.tar.gz (and logs actions)
 ```
 
@@ -133,19 +133,4 @@ ls -1t "$DEST"/*.tar.gz | tail -n +$((N+1)) | xargs -r rm -f
 - Make sure `rsync` and `tar` are installed and available in your PATH.
 - Check the log file (see `LOGS` variable in the script) for detailed error information.
 
----
 
-## Changes made to README
-
-- Replaced inconsistent project name (`FileSaveProject`) with `geeSave` where appropriate.
-- Fixed typos and unclosed code blocks.
-- Added installation instructions for the .deb release (download + dpkg) and a note to fix dependencies with `sudo apt-get install -f`.
-- Clarified usage examples and the cleanup behavior.
-
----
-
-If you'd like, I can also:
-- Update the script to consistently print the installed command name after installation (useful when packaging), or
-- Update packaging metadata so the executable is installed to `/usr/local/bin/geeSave`.
-
-Tell me which branch to commit to and confirm (or edit) the commit message and I'll apply the change.
