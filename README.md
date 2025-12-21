@@ -1,4 +1,4 @@
-# FileSaveProject - Automatic Backup Script
+# geeSave - Automatic Backup Script
 
 ## Description
 `FileSaveProject` is a Bash script that automatically backs up a folder to a destination with:  
