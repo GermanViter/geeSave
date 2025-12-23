@@ -4,7 +4,7 @@
 
 geeSave is a small Bash script that automatically backs up a folder to a destination. It focuses on reliability and simplicity and provides:
 - Efficient file copying using `rsync`
-- Compression of backups into `.tar.gz` archives
+- Compression of backups into `.tar.gz` archives (not in 1.1)
 - Automatic cleanup of old backups (keep only the N most recent)
 - Detailed logging of each step
 
@@ -15,7 +15,7 @@ This script is designed for Linux (Ubuntu and other Debian-based distributions) 
 ## Features
 
 1. Backup a source folder to a destination  
-2. Automatic compression of each backup into `.tar.gz`  
+2. Automatic compression of each backup into `.tar.gz` (not in 1.1)
 3. Automatic cleanup: keep only the N most recent backups  
 4. Logging for each action (copy, compression, deletion)
 
@@ -24,7 +24,7 @@ This script is designed for Linux (Ubuntu and other Debian-based distributions) 
 ## Prerequisites
 
 - A Linux distribution with Bash (Ubuntu recommended)  
-- `rsync` and `tar` installed
+- `rsync` and `tar` installed (tar is not mandatory for 1.1)
 
 Install prerequisites on Debian/Ubuntu:
 
@@ -44,7 +44,7 @@ There are two common ways to install and use geeSave.
 Download the .deb from the Releases page and install it with dpkg:
 
 ```bash
-wget https://github.com/GermanViter/geeSave/releases/download/v1.0/geeSave.deb
+wget https://github.com/GermanViter/geeSave/releases/download/v1.1/geeSave.deb
 sudo dpkg -i geeSave.deb
 # If dpkg reports missing dependencies, fix them with:
 sudo apt-get install -f
@@ -62,9 +62,16 @@ cd geeSave
 You can run the script directly from the repository:
 
 ```bash
-bash FileSaveProject.sh /path/to/source/folder /path/to/destination/folder [optional_backup_name]
+bash save.sh /path/to/source/folder /path/to/destination/folder [optional_backup_name]
 ```
-
+You can also copy the script by copying it to the PATH 
+```bash
+sudo cp path/to/script.sh /usr/bin
+```
+Then you can add a symlink to make an executable
+``` bash
+sudo ln -s /usr/bin/save.sh /usr/bin/<name of executable>
+```
 ---
 
 ## Usage
@@ -78,7 +85,7 @@ mkdir -p /path/to/destination/folder
 
 2. Run the script
 
-If installed system-wide (from the .deb):
+If installed system-wide (from the .deb) or in PATH:
 
 ```bash
 save /path/to/source/folder /path/to/destination/folder [optional_backup_name]
@@ -118,12 +125,13 @@ ls -1t "$DEST"/*.tar.gz | tail -n +$((N+1)) | xargs -r rm -f
    - Modify the `LOGS` variable in the script to change where logs are written.
 
 3. Compression:
-   - Compression is enabled by default using `tar -czf`. You can modify this in the script if you prefer another format.
+   - Compression is enabled by default using `tar -czf`. You can modify this in the script if you prefer another format. (not in 1.1)
 
 4. Backup naming:
    - The script accepts an optional third argument to determine the backup archive name.
    - If no name is provided, the script will derive a name from the source path.
    - If a name is provided, the archive will be saved as `/path/to/destination/<NAME>.tar.gz`.
+   - In 1.1, the saved folder wont be archived and will be name `/path/to/destination/<NAME>`.
 
 ---
 
