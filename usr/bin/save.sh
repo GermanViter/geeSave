@@ -17,18 +17,21 @@ RESET="\e[0m"
 
 SOURCE=$1
 DEST=$2
-BACKUP=$3 
+BACKUP_NAME=$3 
 
 if [[ -z $SOURCE || -z $DEST ]]; then
         echo -e "${RED}Error: missing arguments${RESET}"
         exit 1;
 fi
 
+sudo mkdir /var/log/geeSave/
+sudo touch /var/log/geeSave/backup.log
+
 while [[ true ]]; do
    
     DATE=$(date +"%Y-%m-%d_%H-%M-%S")
     BACKUP_DIR="$DEST/backup_$DATE"
-    LOGS="/home/sshuser/geeSave/logs/backup.log"
+    LOGS="/var/log/geeSave/backup.log"
 
     printF_ail() {
         echo "${RED}Backup failed${RESET}"
@@ -56,7 +59,7 @@ while [[ true ]]; do
     fi
     
     if [[ ! -z $BACKUP ]]; then
-        tar -czf "$DEST/$BACKUP.tar.gz" -C "$DEST" "backup_$DATE" # with name
+        tar -czf "$DEST/$BACKUP_NAME.tar.gz" -C "$DEST" "backup_$DATE" # with name
     else
         tar -czf "$BACKUP_DIR.tar.gz" -C "$DEST" "backup_$DATE" # without name
     fi
@@ -80,9 +83,9 @@ while [[ true ]]; do
     echo "======================================"
     echo -e "${GREEN}✔ Backup completed successfully${RESET}"
     if [[ ! -z "$BACKUP" ]]; then 
-        echo "📦 Archive: $DEST/$BACKUP.tar.gz"
+        echo "📦 Archive: $DEST/$BACKUP_NAME.tar.gz"
     else
-    echo "📦 Archive: $BACKUP_NAME.tar.gz"
+    echo "📦 Archive: $BACKUP_DIR.tar.gz"
     fi
     echo "🕒 Time: $DATE"
     echo "======================================"
