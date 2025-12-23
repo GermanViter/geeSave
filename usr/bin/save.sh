@@ -18,26 +18,38 @@ RESET="\e[0m"
 SOURCE=$1
 DEST=$2
 BACKUP_NAME=$3 
+USER=$(whoami)
 
 if [[ -z $SOURCE || -z $DEST ]]; then
         echo -e "${RED}Error: missing arguments${RESET}"
         exit 1;
 fi
 
-sudo mkdir /var/log/geeSave/
+# log file
+sudo mkdir -p /var/log/geeSave/
 sudo touch /var/log/geeSave/backup.log
+sudo chown -R $USER:$USER /var/log/geeSave
+sudo chmod 755 /var/log/geeSave
+sudo chmod 644 /var/log/geeSave/backup.log
 
-while [[ true ]]; do
-   
-    DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+
+
+ DATE=$(date +"%Y-%m-%d_%H-%M-%S")
     BACKUP_DIR="$DEST/backup_$DATE"
     LOGS="/var/log/geeSave/backup.log"
 
-    printF_ail() {
+    printFail() {
         echo "${RED}Backup failed${RESET}"
         echo "Check logs: $LOGS"
         exit 1
     }
+
+    if [[ ! -w "$LOGS" ]]; then
+        echo "Error: cannot write to log file $LOGS"
+        exit 1
+    fi
+
+while [[ true ]]; do
 
     if [[ ! -d "$SOURCE" ]]; then
         echo -e "${RED}✖ Error: source directory does not exist${RESET}"
@@ -54,39 +66,22 @@ while [[ true ]]; do
     echo -e "${BLUE}Starting backup...${RESET}"
     rsync -av "$SOURCE/" "$BACKUP_DIR" # use rsync intead of cp
     if [ $? -ne 0 ]; then
-        echo "[$DATE] "$SOURCE/" : sync failed" >> $LOGS
+        echo "[$DATE] "$SOURCE/" : sync failed" | sudo tee -a "$LOGS" > /dev/null
         printFail
     fi
     
-    if [[ ! -z $BACKUP ]]; then
-        tar -czf "$DEST/$BACKUP_NAME.tar.gz" -C "$DEST" "backup_$DATE" # with name
-    else
-        tar -czf "$BACKUP_DIR.tar.gz" -C "$DEST" "backup_$DATE" # without name
-    fi
-
-    if [ $? -ne 0 ]; then
-        echo "[$DATE] "$SOURCE/" : backup failed" >> $LOGS
-        print_Fail
-    fi
-
-    rm -r "$BACKUP_DIR"
-
-    echo "[$DATE] $BACKUP_DIR : succes" >> $LOGS
-    echo "[$DATE] $DEST/backup_$DATE.tar.gz : compressé" >> $LOGS
-    
-    for OLD in $(ls -t $DEST | grep backup_ | tail -n +6); do
+    echo "[$DATE] $BACKUP_DIR : succes" | sudo tee -a "$LOGS" > /dev/null    
+    for OLD in $(ls -t $DEST | grep backup_ | tail -n +2); do
     	rm -r "$DEST/$OLD"
-    	echo "[$DATE] Suppression : $OLD" >> $LOGS
+    	echo "[$DATE] Suppression : $OLD" | sudo tee -a "$LOGS" > /dev/null
     done
     echo -e "${GREEN}Backup finished${RESET}"
 
     echo "======================================"
     echo -e "${GREEN}✔ Backup completed successfully${RESET}"
-    if [[ ! -z "$BACKUP" ]]; then 
-        echo "📦 Archive: $DEST/$BACKUP_NAME.tar.gz"
-    else
-    echo "📦 Archive: $BACKUP_DIR.tar.gz"
-    fi
+    echo -e "Folder: $BACKUP_DIR"
+    echo -e "Source folder: $SOURCE"
+    echo -e "Destination: $DEST"
     echo "🕒 Time: $DATE"
     echo "======================================"
     break
